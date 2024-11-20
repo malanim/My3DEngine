@@ -1,37 +1,45 @@
 # main.py
 
-from camera import Camera
 from renderer import Renderer
-from object import Cube, Sphere, Plane  # Импортируйте ваши классы объектов
-from vector import Vector3, Color, Matrix4  # Импортируйте класс Color
+from object import Cube, Sphere, Plane
+from light import Light  # Импортируем класс Light
+from camera import Camera  # Импортируем класс Camera
+from vector import Vector3, Matrix4  # Импортируем класс Vector3
+from time import sleep
 
 def main():
-    # Создайте камеру
-    camera = Camera(Vector3(0, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0))
+    # Инициализация объектов
+    obj = Cube(size=1, color=(100, 100, 255))
+    objects = [obj]
 
-    # Создайте рендерер
-    renderer = Renderer(screen_width=120, screen_height=60)
+    # Создаем матрицу трансляции
+    translation_matrix = Matrix4.translation(2, -2, 0)  # Перемещение на 2 по X и -2 по Y
+    # Применяем трансляцию к объекту
+    obj.transform(translation_matrix)
+    
+    # Инициализация источников света
+    lights = [Light(position=Vector3(5, 5, 5), color=(255, 255, 255))]
 
-    # Создайте некоторые 3D-объекты с цветами
-    objects = [
-        Cube(size=2, color=Color(255, 0, 0)),  # Красный куб
-        Sphere(radius=1, color=Color(0, 255, 0), segments=12),  # Зеленая сфера
-        Plane(width=3, height=3, color=Color(0, 0, 255)),  # Синяя плоскость
-    ]
+    # Инициализация камеры
+    camera = Camera(position=Vector3(0, 0, -5), direction=Vector3(0, 0, -1), up_vector=Vector3(0, 1, 0))
 
-    # Основной цикл игры
-    angle = 0  # Угол вращения
+    # Инициализация рендерера
+    renderer = Renderer()
+
+    rotation_angle = 0  # Угол вращения
+    rotation_angle += 0.05  # Увеличиваем угол вращения
+
     while True:
-        # Обновление состояния игры (например, ввод, движение объектов и т.д.)
-        angle += 0.01  # Увеличиваем угол для вращения
-        rotation_matrix = Matrix4.rotation_y(angle)  # Создаем матрицу вращения вокруг оси Y
+        
+        rotation_matrix = Matrix4.rotation_z(rotation_angle)  # Создаем матрицу вращения вокруг оси Y
+        
+        # Применяем матрицу вращения к кубу
+        obj.transform(rotation_matrix)
 
-        for obj in objects:
-            obj.transform(rotation_matrix)  # Применяем матрицу вращения к объекту
-
-        # Рендеринг объектов
-        renderer.render(objects, camera)
-        input()
+        # Рендерим сцену
+        renderer.render(objects, camera, lights)
+        # input()  # Ожидание ввода от пользователя
+        sleep(0.01)  # Задержка для управления скоростью отображения
 
 if __name__ == "__main__":
     main()

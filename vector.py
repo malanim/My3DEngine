@@ -10,12 +10,15 @@ class Vector3:
         self.z = z
 
     def __add__(self, other):
+        """Сложение векторов."""
         return Vector3(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
+        """Вычитание векторов."""
         return Vector3(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __mul__(self, other):
+        """Умножение на скаляр или матрицу."""
         if isinstance(other, Matrix4):  # Умножение на матрицу
             vec = np.array([self.x, self.y, self.z, 1])  # Однородные координаты
             result = np.dot(other.values, vec)  # Умножаем матрицу на вектор
@@ -25,19 +28,39 @@ class Vector3:
         else:
             raise TypeError("Unsupported operand type(s) for *: 'Vector3' and '{}'".format(type(other).__name__))
 
+    def dot(self, other):
+        """Вычисляет скалярное произведение с другим вектором."""
+        if not isinstance(other, Vector3):
+            raise TypeError("Dot product requires another Vector3 instance")
+        return self.x * other.x + self.y * other.y + self.z * other.z
+    
+    def cross(self, other):
+        """Вычисляет векторное произведение с другим вектором."""
+        if not isinstance(other, Vector3):
+            raise TypeError("Cross product requires another Vector3 instance")
+        return Vector3(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
+
     def to_numpy(self):
+        """Преобразует вектор в массив NumPy."""
         return np.array([self.x, self.y, self.z])
 
     def length(self):
-        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
+        """Вычисляет длину вектора."""
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     def normalize(self):
+        """Нормализует вектор."""
         length = self.length()
         if length == 0:
             raise ValueError("Cannot normalize a zero vector.")
         return Vector3(self.x / length, self.y / length, self.z / length)
 
     def __repr__(self):
+        """Строковое представление вектора."""
         return f"Vector3({self.x}, {self.y}, {self.z})"
 
 
