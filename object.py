@@ -59,6 +59,7 @@ class Sphere(Object3D):
         self.color = color
 
         # Генерация вершин
+        unique_vertices = set()  # Используем set для уникальности
         for i in range(segments + 1):
             theta = i * math.pi / segments  # Угол по вертикали
             for j in range(segments + 1):
@@ -66,7 +67,13 @@ class Sphere(Object3D):
                 x = radius * math.sin(theta) * math.cos(phi)
                 y = radius * math.sin(theta) * math.sin(phi)
                 z = radius * math.cos(theta)
-                self.vertices.append(Vector3(x, y, z))
+                vertex = Vector3(x, y, z)
+
+                # Добавляем уникальные вершины
+                unique_vertices.add((round(vertex.x, 8), round(vertex.y, 8), round(vertex.z, 8)))
+
+        # Преобразуем обратно в список
+        self.vertices = [Vector3(x, y, z) for x, y, z in unique_vertices]
 
         # Генерация граней
         for i in range(segments):
