@@ -112,3 +112,9 @@ class Matrix4:
 
     def __repr__(self):
         return f"Matrix4({self.values})"
+
+class Color:
+    def __init__(self, r=255, g=255, b=255):
+        self.r = max(0, min(255, r))  # Ограничиваем значения от 0 до 255
+        self.g = max(0, min(255, g))
+        self.b = max(0, min(255, b))

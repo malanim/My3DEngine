@@ -3,7 +3,7 @@
 from camera import Camera
 from renderer import Renderer
 from object import Cube, Sphere, Plane  # Импортируйте ваши классы объектов
-from vector import Vector3, Matrix4
+from vector import Vector3, Color, Matrix4  # Импортируйте класс Color
 
 def main():
     # Создайте камеру
@@ -12,11 +12,11 @@ def main():
     # Создайте рендерер
     renderer = Renderer()
 
-    # Создайте некоторые 3D-объекты
+    # Создайте некоторые 3D-объекты с цветами
     objects = [
-        Cube(size=2, color=(255, 0, 0)),  # Красный куб
-        Sphere(radius=1, color=(0, 255, 0), segments=12),  # Зеленая сфера
-        Plane(width=3, height=3, color=(0, 0, 255)),  # Синяя плоскость
+        Cube(size=2, color=Color(255, 0, 0)),  # Красный куб
+        Sphere(radius=1, color=Color(0, 255, 0), segments=12),  # Зеленая сфера
+        Plane(width=3, height=3, color=Color(0, 0, 255)),  # Синяя плоскость
     ]
 
     # Основной цикл игры
@@ -31,6 +31,7 @@ def main():
 
         # Рендеринг объектов
         renderer.render(objects, camera)
+        input()
 
 if __name__ == "__main__":
     main()
