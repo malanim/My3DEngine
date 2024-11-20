@@ -6,13 +6,13 @@ from vector import Vector3  # Импортируем класс Vector3 из ф�
 
 class Object3D:
     def __init__(self, vertices, faces, color):
-        self.vertices = vertices  # Список вершин
-        self.faces = faces        # Список граней
-        self.color = color        # Цвет
+        self.vertices = vertices  # Список вершин (объекты Vector3)
+        self.faces = faces        # Список граней (индексы вершин)
+        self.color = color        # Цвет объекта
 
     def transform(self, matrix):
-        # Применение матрицы к вершинам
-        self.vertices = [matrix * Vector3(v.x, v.y, v.z) for v in self.vertices]
+        """Применяет матрицу трансформации к вершинам объекта."""
+        self.vertices = [matrix * v for v in self.vertices]  # Умножаем матрицу на каждую вершину
 
 class Cube(Object3D):
     def __init__(self, size=1, color=(255, 255, 255)):

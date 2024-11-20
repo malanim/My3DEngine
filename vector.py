@@ -16,15 +16,17 @@ class Vector3:
         return Vector3(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __mul__(self, other):
-        if isinstance(other, (int, float)):  # Умножение на скаляр
+        if isinstance(other, Matrix4):  # Умножение на матрицу
+            # Создаем вектор в виде массива для умножения
+            vec = np.array([self.x, self.y, self.z, 1])  # Добавляем 1 для однородных координат
+            result = np.dot(other.values, vec)  # Умножаем матрицу на вектор
+            return Vector3(result[0], result[1], result[2])  # Возвращаем новый вектор
+        elif isinstance(other, (int, float)):  # Умножение на скаляр
             return Vector3(self.x * other, self.y * other, self.z * other)
-        elif isinstance(other, Vector3):  # Умножение на вектор (поэлементное)
-            return Vector3(self.x * other.x, self.y * other.y, self.z * other.z)
         else:
             raise TypeError("Unsupported operand type(s) for *: 'Vector3' and '{}'".format(type(other).__name__))
 
     def to_numpy(self):
-        """Преобразует вектор в массив NumPy."""
         return np.array([self.x, self.y, self.z])
 
     def length(self):
@@ -42,16 +44,15 @@ class Vector3:
 class Matrix4:
     def __init__(self, values=None):
         if values is None:
-            self.values = [[0] * 4 for _ in range(4)]
+            self.values = np.eye(4)  # Инициализация единичной матрицы 4x4
         else:
-            self.values = values
+            self.values = np.array(values)
 
     def __mul__(self, other):
-        result = [[0] * 4 for _ in range(4)]
-        for i in range(4):
-            for j in range(4):
-                result[i][j] = sum(self.values[i][k] * other.values[k][j] for k in range(4))
-        return Matrix4(result)
+        if isinstance(other, Matrix4):
+            return Matrix4(np.dot(self.values, other.values))
+        else:
+            raise TypeError("Unsupported operand type(s) for *: 'Matrix4' and '{}'".format(type(other).__name__))
 
     @staticmethod
     def translation(tx, ty, tz):
@@ -64,8 +65,8 @@ class Matrix4:
 
     @staticmethod
     def rotation_x(angle):
-        c = math.cos(angle)
-        s = math.sin(angle)
+        c = np.cos(angle)
+        s = np.sin(angle)
         return Matrix4([
             [1, 0, 0, 0],
             [0, c, -s, 0],
@@ -75,8 +76,8 @@ class Matrix4:
 
     @staticmethod
     def rotation_y(angle):
-        c = math.cos(angle)
-        s = math.sin(angle)
+        c = np.cos(angle)
+        s = np.sin(angle)
         return Matrix4([
             [c, 0, s, 0],
             [0, 1, 0, 0],
@@ -86,8 +87,8 @@ class Matrix4:
 
     @staticmethod
     def rotation_z(angle):
-        c = math.cos(angle)
-        s = math.sin(angle)
+        c = np.cos(angle)
+        s = np.sin(angle)
         return Matrix4([
             [c, -s, 0, 0],
             [s, c, 0, 0],
