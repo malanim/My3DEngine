@@ -29,6 +29,19 @@ class Renderer:
     def get_ansi_color(self, color):
         return f"\033[38;2;{color[0]};{color[1]};{color[2]}m"
 
+    def get_symbol_from_intensity(self, intensity):
+        """Возвращает символ на основе интенсивности освещения."""
+        if intensity > 0.8:
+            return '█'  # Full Block
+        elif intensity > 0.6:
+            return '▓'  # Dark Shade
+        elif intensity > 0.4:
+            return '▒'  # Medium Shade
+        elif intensity > 0.2:
+            return '░'  # Light Shade
+        else:
+            return ' '  # Space
+
     def render(self, objects, camera, lights):
         view_matrix = camera.get_view_matrix()
         screen_buffer = [[' ' for _ in range(self.screen_width)] for _ in range(self.screen_height)]
@@ -54,7 +67,8 @@ class Renderer:
                             # Рассчитайте направление 
                             light_direction = (lights[0].position - vertex).normalize()  # Предполагаем, что у нас есть хотя бы один источник света
                             intensity = self.calculate_lighting(normal, light_direction)
-                            screen_buffer[y][x] = color_code + '█'  # Используем символ для отображения
+                            symbol = self.get_symbol_from_intensity(intensity)  # Получаем символ на основе интенсивности
+                            screen_buffer[y][x] = color_code + symbol  # Используем символ для отображения
 
         # Выводим экранный буфер
         os.system('cls' if os.name == 'nt' else 'clear')
