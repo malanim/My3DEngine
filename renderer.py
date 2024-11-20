@@ -1,10 +1,12 @@
 # renderer.py
 
 import numpy as np
+import os
 
 class Renderer:
-    def __init__(self):
-        pass  # Здесь можно инициализировать необходимые переменные, если нужно
+    def __init__(self, screen_width=80, screen_height=40):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
 
     def project(self, vertex, view_matrix):
         # Примените матрицу вида к вершине
@@ -23,10 +25,22 @@ class Renderer:
         return intensity
 
     def render(self, objects, camera):
+        # Получаем матрицу вида
         view_matrix = camera.get_view_matrix()
+        # Создаем буфер экрана
+        screen_buffer = [[' ' for _ in range(self.screen_width)] for _ in range(self.screen_height)]
+
         for obj in objects:
             for vertex in obj.vertices:
                 projected_vertex = self.project(vertex, view_matrix)
                 if projected_vertex:
-                    # Здесь можно добавить код для отображения точки в консоли
-                    print(f"Vertex projected to 2D: {projected_vertex}")
+                    x, y = int(projected_vertex[0] * (self.screen_width // 4)), int(projected_vertex[1] * (self.screen_height // 4))
+                    if 0 <= x < self.screen_width and 0 <= y < self.screen_height:
+                        screen_buffer[y][x] = '#'  # Отображаем точку на экране
+
+        # Очистка экрана
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        # Выводим буфер на экран
+        for row in screen_buffer:
+            print(''.join(row))
