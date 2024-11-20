@@ -10,7 +10,7 @@ def main():
     camera = Camera(Vector3(0, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0))
 
     # Создайте рендерер
-    renderer = Renderer()
+    renderer = Renderer(screen_width=120, screen_height=60)
 
     # Создайте некоторые 3D-объекты с цветами
     objects = [
