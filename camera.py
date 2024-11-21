@@ -4,23 +4,23 @@ import numpy as np
 from vector import Vector3
 
 class Camera:
-    def __init__(self, position, direction, up_vector, projection_type="perspective", fov=60, near=0.1, far=100):
+    def __init__(self, position, direction, up_vector, projection_type="perspective", fov=45, near=0.1, far=100):
         self.position = position.to_numpy()
         self.direction = direction.normalize()
         self.up_vector = up_vector.normalize()
-        self.projection_type = projection_type  # "perspective" или "orthographic"
-        self.fov = fov  # угол обзора для перспективной проекции
-        self.near = near  # ближняя плоскость отсечения
-        self.far = far  # дальняя плоскость отсечения
-        self.aspect_ratio = 1.0  # соотношение сторон (width/height)
+        self.projection_type = projection_type
+        self.fov = fov
+        self.near = near
+        self.far = far
+        self.aspect_ratio = 2.0  # Учитываем, что символы в консоли прямоугольные
         
-        # Корректируем позицию камеры в зависимости от типа проекции
+        # Настраиваем позицию камеры для вида сверху-сбоку
         if self.projection_type == "orthographic":
-            # Для ортографической проекции располагаем камеру дальше
-            self.position[2] *= 2.0  # Отодвигаем камеру дальше
+            self.position[2] *= 2.5
         else:
-            # Для перспективной проекции располагаем ближе
-            self.position[2] *= 1.2
+            # Поднимаем камеру выше и отодвигаем дальше
+            self.position[1] *= 1.5  # Поднимаем выше
+            self.position[2] *= 2.0  # Отодвигаем дальше
         
         # Проверка на нулевые векторы
         if self.direction.length() == 0 or self.up_vector.length() == 0:
@@ -62,14 +62,18 @@ class Camera:
 
     def get_projection_matrix(self):
         if self.projection_type == "perspective":
-            # Создаем матрицу перспективной проекции
+            # Улучшенная матрица перспективной проекции
             f = 1.0 / np.tan(np.radians(self.fov) / 2.0)
+            z_range = self.far - self.near
+            a = self.aspect_ratio
+            
+            # Улучшенная матрица перспективной проекции с учетом aspect ratio
             return np.array([
-                [f/self.aspect_ratio, 0, 0, 0],
+                [f/a, 0, 0, 0],
                 [0, f, 0, 0],
-                [0, 0, (self.far+self.near)/(self.near-self.far), -1],
-                [0, 0, (2*self.far*self.near)/(self.near-self.far), 0]
-            ])
+                [0, 0, -(self.far + self.near)/z_range, -(2*self.far*self.near)/z_range],
+                [0, 0, -1, 0]
+            ]) * 0.5  # Уменьшаем масштаб для лучшей видимости
         else:  # orthographic
             # Создаем матрицу ортографической проекции
             scale = 1.0

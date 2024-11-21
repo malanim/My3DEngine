@@ -82,6 +82,20 @@ class Matrix4:
         else:
             raise TypeError("Unsupported operand type(s) for *: 'Matrix4' and '{}'".format(type(other).__name__))
 
+    def __matmul__(self, other):
+        """Matrix multiplication using @ operator."""
+        if isinstance(other, Matrix4):
+            return Matrix4(np.dot(self.values, other.values))
+        else:
+            raise TypeError("Unsupported operand type(s) for @: 'Matrix4' and '{}'".format(type(other).__name__))
+
+    def __rmatmul__(self, other):
+        """Reverse matrix multiplication using @ operator."""
+        if isinstance(other, Matrix4):
+            return Matrix4(np.dot(other.values, self.values))
+        else:
+            raise TypeError("Unsupported operand type(s) for @: '{}' and 'Matrix4'".format(type(other).__name__))
+
     @staticmethod
     def translation(tx, ty, tz):
         return Matrix4([
